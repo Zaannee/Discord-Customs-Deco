@@ -1,0 +1,481 @@
+/* Import Tailwind */
+@import 'tailwindcss/base.css';
+@import 'tailwindcss/components.css';
+@import 'tailwindcss/utilities.css';
+
+:root {
+	--breakpoint-xs: 440px;
+	--breakpoint-sm: 540px;
+	--breakpoint-md: 900px;
+
+	--color-primary: hsl(350, 100%, 88%);
+	--color-success: #44a25b;
+	--color-warning: #b98037;
+	--color-critical: #d83a42;
+
+	--color-base-low: hsl(0, 0%, 15%);
+	--color-base-lower: hsl(0, 0%, 10%);
+	--color-base-lowest: hsl(0, 0%, 5%);
+
+	--color-surface-overlay: hsl(0, 0%, 0%);
+	--color-surface-high: hsl(350, 100%, 97%);
+	--color-surface-higher: hsl(0, 0%, 100%);
+	--color-surface-highest: hsl(350, 100%, 98%);
+
+	--color-border-normal: hsla(350, 100%, 88%, 0.2);
+	--color-border-faint: hsla(350, 100%, 88%, 0.1);
+	--color-border-strong: hsla(350, 100%, 88%, 0.4);
+
+	--color-icon: hsl(0, 0%, 100%);
+	--color-icon-tertiary: hsl(350, 100%, 88%);
+
+	--color-text: hsl(0, 0%, 100%);
+	--color-text-muted: hsl(0, 0%, 80%);
+	--color-text-link: hsl(350, 100%, 88%);
+	--color-text-primary: hsl(0, 0%, 100%);
+	--color-text-secondary: hsl(0, 0%, 90%);
+	--color-text-positive: hsl(130.769, 37.143%, 58.824%);
+	--color-text-warning: hsl(33.143, 54.404%, 62.157%);
+	--color-text-critical: hsl(0, 100%, 93.725%);
+
+	--color-button-primary-background: hsl(350, 100%, 88%);
+	--color-button-primary-hover: hsl(350, 100%, 83%);
+	--color-button-primary-active: hsl(350, 100%, 78%);
+	--color-button-primary-border: hsla(0, 0%, 100%, 0.1);
+
+	--color-button-secondary-background: hsla(0, 0%, 100%, 0.1);
+	--color-button-secondary-hover: hsla(0, 0%, 100%, 0.2);
+	--color-button-secondary-active: hsla(0, 0%, 100%, 0.3);
+	--color-button-secondary-border: hsla(0, 0%, 100%, 0.05);
+}
+
+@layer base {
+	button {
+		cursor: pointer;
+	}
+}
+
+/* BUTTONS */
+@layer components {
+	.button-primary {
+		background-color: var(--color-button-primary-background);
+		border-color: var(--color-button-primary-border);
+		border-radius: 0.5rem;
+		transition: all 0.2s;
+		color: var(--color-base-lower);
+		box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+	}
+	.button-primary:hover {
+		background-color: var(--color-button-primary-hover);
+	}
+	.button-primary:active {
+		background-color: var(--color-button-primary-active);
+	}
+
+	.button-secondary {
+		background-color: var(--color-button-secondary-background);
+		border: 1px solid var(--color-button-secondary-border);
+		border-radius: 0.5rem;
+		transition: all 0.2s;
+		box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+	}
+	.button-secondary:hover {
+		background-color: var(--color-button-secondary-hover);
+	}
+	.button-secondary:active {
+		background-color: var(--color-button-secondary-active);
+	}
+
+	.button-tile {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		padding: 0.5rem;
+		border: 1px solid var(--color-border-faint);
+		border-radius: 0.5rem;
+		transition: all 0.2s;
+		background: rgba(30, 31, 34, 0.7) !important;
+	}
+	.button-tile:hover {
+		border-color: var(--color-primary);
+		background: rgba(var(--color-primary), 0.1) !important;
+	}
+	.button-tile img {
+		width: 100%;
+		border-radius: 0.5rem;
+		background: transparent;
+	}
+	.button-tile.decor {
+		background: rgba(30, 31, 34, 0.9) !important;
+	}
+}
+
+* {
+	font-family: "gg sans", sans-serif;
+}
+
+.ginto {
+	font-family: "ABC Ginto Nord";
+	letter-spacing: 1px;
+}
+
+.nitro-font {
+	font-family: "Urfa", sans-serif;
+}
+
+*::selection {
+	background: hsl(350, 100%, 88%);
+	color: hsl(0, 0%, 10%);
+}
+
+#profile-preview hr {
+	outline: none;
+	border: none;
+	border-bottom: 1px solid hsl(350, 100%, 88%, 0.2);
+	margin: 12px 0;
+}
+
+#settings hr {
+	outline: none;
+	margin: 24px 0;
+}
+
+/* DISCORD STYLE SCROLLBAR */
+/* Chromium */
+.discord-scrollbar::-webkit-scrollbar,
+body::-webkit-scrollbar {
+	width: 16px;
+}
+.discord-scrollbar::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
+	background: hsl(0, 0%, 15%);
+	border-radius: 99px;
+	border: solid 4.5px transparent;
+	background-clip: content-box;
+}
+.discord-scrollbar::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+	background: hsl(350, 100%, 88%, 0.3);
+	border-radius: 99px;
+	min-height: 30px;
+	border: solid 4.5px transparent;
+	background-clip: content-box !important;
+}
+/* Firefox */
+@-moz-document url-prefix() {
+	body,
+	.discord-scrollbar {
+		scrollbar-track-color: hsl(0, 0%, 15%);
+		scrollbar-face-color: hsl(350, 100%, 88%, 0.3);
+		scrollbar-color: hsl(350, 100%, 88%, 0.3) hsl(0, 0%, 15%);
+		scrollbar-gutter: stable;
+		padding-right: 16px;
+	}
+}
+
+body:has([nice]) {
+	white-space: pre;
+}
+
+body:has([nice]) > * {
+	display: none;
+}
+
+body:has([nice])::before {
+	content: "418";
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 50;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: var(--color-base-lower);
+	margin-bottom: 3.5rem;
+	color: white;
+	font-size: 3.75rem;
+	font-family: "ABC Ginto Nord";
+	letter-spacing: 1px;
+}
+
+body:has([nice])::after {
+	content: "An unexpected error has occurred.\APlease consult your teapot administrator or open a GitHub issue.";
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 50;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-top: 3.5rem;
+	color: white;
+	text-align: center;
+}
+
+/* LOADING SCREEN */
+.loading-screen {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	background: var(--color-base-lower);
+	gap: 2rem;
+	z-index: 50;
+}
+
+.loading-screen h1 {
+	font-family: "ABC Ginto Nord", sans-serif;
+	font-size: 3.5rem;
+	background: linear-gradient(135deg, var(--color-primary) 0%, #ffffff 100%);
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+	text-align: center;
+	margin: 0;
+	opacity: 0;
+	animation: fadeIn 0.5s ease-out forwards;
+	animation-delay: 0.3s;
+	text-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+	letter-spacing: 1px;
+}
+
+.loading-logo {
+	position: relative;
+	width: 80px;
+	height: 80px;
+	opacity: 0;
+	animation: fadeIn 0.5s ease-out forwards;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.loading-logo::before {
+	content: '';
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	border-radius: 50%;
+	border: 4px solid transparent;
+	border-top-color: var(--color-primary);
+	border-right-color: var(--color-primary);
+	animation: spin 1.5s cubic-bezier(0.6, 0.2, 0.4, 0.9) infinite;
+	box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+}
+
+.loading-logo::after {
+	content: '';
+	position: absolute;
+	width: 70%;
+	height: 70%;
+	border-radius: 50%;
+	border: 4px solid transparent;
+	border-bottom-color: #ffffff;
+	border-left-color: #ffffff;
+	animation: spin 2s cubic-bezier(0.6, 0.2, 0.4, 0.9) infinite reverse;
+	opacity: 0.3;
+}
+
+/* Ajout d'un troisième cercle pour plus d'effet */
+.loading-logo .inner-circle {
+	position: absolute;
+	width: 40%;
+	height: 40%;
+	border-radius: 50%;
+	background: linear-gradient(135deg, var(--color-primary) 0%, transparent 80%);
+	animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+	0%, 100% {
+		opacity: 0.3;
+		transform: scale(0.8);
+	}
+	50% {
+		opacity: 0.6;
+		transform: scale(1.2);
+	}
+}
+
+@keyframes spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* 404 PAGE */
+.error-page {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	background: var(--color-base-lower);
+	gap: 1rem;
+}
+
+.error-page h1 {
+	font-family: "ABC Ginto Nord", sans-serif;
+	font-size: 8rem;
+	background: linear-gradient(135deg, var(--color-primary) 0%, #ffffff 100%);
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+	margin: 0;
+	line-height: 1;
+	animation: fadeInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+	text-shadow: 0 0 40px rgba(255, 255, 255, 0.1);
+}
+
+.error-page p {
+	color: var(--color-text-muted);
+	font-size: 1.25rem;
+	text-align: center;
+	margin: 0;
+	animation: fadeInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+	animation-delay: 0.1s;
+	opacity: 0;
+	animation-fill-mode: forwards;
+}
+
+@keyframes fadeInUp {
+	from {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* Suppression des anciens styles de loading */
+.loading-cube-container,
+.loading-cube,
+.loading-circle-container,
+.loading-circle-inner,
+.loading-circle,
+.path,
+.path2,
+.path3 {
+	display: none;
+}
+
+/* SHINY BUTTON */
+@keyframes button-shine {
+	0% {
+		left: -50%;
+	}
+	50% {
+		left: 125%;
+	}
+	100% {
+		left: 125%;
+	}
+}
+.shiny-button {
+	position: relative;
+	overflow: hidden;
+}
+.shiny-button::after {
+	content: "";
+	width: 10px;
+	height: 100px;
+	position: absolute;
+	top: 50%;
+	left: 0;
+	transform: rotate(30deg) translate3d(0, -50%, 0);
+	background-color: rgba(255, 255, 255, 0.2);
+	outline: 10px solid rgba(255, 255, 255, 0.1);
+	animation: button-shine 2s ease-in-out infinite;
+}
+
+/* HIGHLIGHT */
+.highlight {
+	border: hsl(350, 100%, 88%) solid 1px;
+	background: linear-gradient(90deg, hsla(350, 100%, 88%, 0.1) 0%, hsla(350, 100%, 97%, 0.1) 100%);
+}
+
+/* LINK */
+.link {
+	color: var(--color-text-link);
+	transition: color 0.2s;
+}
+.link:hover {
+	text-decoration: underline;
+}
+
+.loading-progress {
+	position: relative;
+	width: 300px;
+	height: 6px;
+	background: rgba(255, 255, 255, 0.1);
+	border-radius: 8px;
+	overflow: hidden;
+	margin-top: 2rem;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.loading-progress-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	background: linear-gradient(90deg, 
+		var(--color-primary) 0%,
+		hsl(350, 100%, 92%) 50%,
+		#ffffff 100%
+	);
+	transform: translateX(-100%);
+	animation: progress 5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+	box-shadow: 0 0 20px var(--color-primary);
+}
+
+.loading-percentage {
+	font-size: 1rem;
+	color: var(--color-text-muted);
+	margin-top: 1rem;
+	letter-spacing: 2px;
+	opacity: 0.9;
+	font-weight: 500;
+}
+
+@keyframes progress {
+	0% {
+		transform: translateX(-100%);
+	}
+	20% {
+		transform: translateX(-80%);
+	}
+	50% {
+		transform: translateX(-40%);
+	}
+	100% {
+		transform: translateX(0%);
+	}
+}
