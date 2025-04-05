@@ -1,8 +1,9 @@
 /* Import Tailwind */
-@import 'tailwindcss/base.css';
-@import 'tailwindcss/components.css';
-@import 'tailwindcss/utilities.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
+/* Variables CSS */
 :root {
 	--breakpoint-xs: 440px;
 	--breakpoint-sm: 540px;
@@ -49,13 +50,14 @@
 	--color-button-secondary-border: hsla(0, 0%, 100%, 0.05);
 }
 
+/* Base Styles */
 @layer base {
 	button {
 		cursor: pointer;
 	}
 }
 
-/* BUTTONS */
+/* Component Styles */
 @layer components {
 	.button-primary {
 		background-color: var(--color-button-primary-background);
