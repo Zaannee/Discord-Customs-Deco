@@ -49,6 +49,7 @@ npm run dev
 
 - Site créé par [ItsPi3141](https://github.com/ItsPi3141)
 - Améliorations et redesign par [Zane](https://github.com/Zaannee)
+- Les avatars des personnages Discord ont été créés à l'origine par Bred et Jace. Découvrez la collection complète sur [Figma](https://www.figma.com/@bred)
 
 ## 📝 Licence
 
