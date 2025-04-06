@@ -67,17 +67,47 @@ npm run dev
 
 ## 🔧 Environment Setup
 
-Create a `.env` file in the root directory with:
+### Discord Bot Configuration
+
+1. Go to the [Discord Developer Portal](https://discord.com/developers/applications)
+2. Click "New Application" and give it a name
+3. Go to the "Bot" section and click "Add Bot"
+4. Under the bot settings, enable these Privileged Gateway Intents:
+   - Presence Intent
+   - Server Members Intent
+   - Message Content Intent
+5. Copy your bot token (Keep it secret!)
+6. Create a `.env.local` file in the root directory with:
 ```env
-NEXT_PUBLIC_BASE_IMAGE_URL=your_base_url
+DISCORD_BOT_TOKEN=your_bot_token
 ```
+
+### Important Notes
+- Never share your bot token publicly
+- Keep your `.env.local` file in your `.gitignore`
+- The bot token is required for the "Fetch User Data" functionality
 
 ## 🌐 Deployment
 
 The application is optimized for Vercel deployment:
+
 1. Connect your GitHub repository to Vercel
-2. Configure environment variables
+2. Configure environment variables:
+   - Go to your project settings in Vercel
+   - Navigate to the "Environment Variables" section
+   - Add the following variables:
+     ```
+     DISCORD_BOT_TOKEN=your_bot_token
+     ```
+   - Make sure to select all environments (Production, Preview, and Development)
+   - Click "Save" to apply the changes
 3. Deploy automatically with every push
+
+### Vercel Deployment Tips
+- After adding environment variables, redeploy your application
+- You can verify the environment variables are set correctly in the Vercel deployment logs
+- For security, Vercel encrypts all environment variables
+- You can use different values for different environments (Production/Preview/Development)
 
 ## 👥 Credits
 
