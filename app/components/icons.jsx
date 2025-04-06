@@ -153,4 +153,52 @@ export const Icons = {
 			</svg>
 		);
 	},
+	x({ width = "1em", height = "1em" }) {
+		return (
+			<svg
+				aria-hidden="true"
+				width={width}
+				height={height}
+				viewBox="0 0 24 24"
+				fill="none"
+				xmlns="http://www.w3.org/2000/svg"
+			>
+				<path
+					fill="currentColor"
+					d="M18.4 4L12 10.4L5.6 4L4 5.6L10.4 12L4 18.4L5.6 20L12 13.6L18.4 20L20 18.4L13.6 12L20 5.6L18.4 4Z"
+				/>
+			</svg>
+		);
+	},
+	checkCircle: (props) => (
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			strokeWidth="2"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+			{...props}
+		>
+			<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+			<polyline points="22 4 12 14.01 9 11.01" />
+		</svg>
+	),
+	xCircle: (props) => (
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			strokeWidth="2"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+			{...props}
+		>
+			<circle cx="12" cy="12" r="10" />
+			<line x1="15" y1="9" x2="9" y2="15" />
+			<line x1="9" y1="9" x2="15" y2="15" />
+		</svg>
+	),
 };

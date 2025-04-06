@@ -1,56 +1,94 @@
 # Discord Custom Avatars
 
-Une application web élégante permettant de créer et de personnaliser des avatars Discord avec des décorations.
+An elegant web application for creating and customizing Discord avatars with decorations, providing a seamless and user-friendly experience.
 
-## 🌟 Fonctionnalités
+## 🌟 Features
 
-- **Personnalisation d'Avatar**
-  - Téléchargez votre propre image de profil
-  - Choisissez parmi une sélection d'avatars prédéfinis
-  - Prévisualisation en temps réel des modifications
+- **Avatar Customization**
+  - Upload your own profile picture
+  - Choose from a curated selection of pre-designed avatars
+  - Real-time preview of modifications
+  - Support for both GIF and PNG formats
+  - Direct Discord user ID integration
 
-- **Décorations d'Avatar**
-  - Large choix de décorations Discord
-  - Prévisualisation instantanée des décorations
-  - Navigation facile entre les différents thèmes
+- **Avatar Decorations**
+  - Wide selection of Discord decorations
+  - Instant decoration preview
+  - Easy navigation through different themes
+  - Smooth animation transitions
+  - High-quality decoration rendering
 
-- **Interface Utilisateur**
-  - Design moderne et épuré
-  - Interface responsive et intuitive
-  - Expérience utilisateur fluide et agréable
+- **Discord Integration**
+  - Fetch user profiles directly using Discord ID
+  - Display account creation date
+  - Preview messages with decorations
+  - Automatic username synchronization
 
-## 💻 Technologies Utilisées
+- **User Interface**
+  - Modern and clean design
+  - Fully responsive interface
+  - Smooth animations and transitions
+  - Dark theme optimized for comfort
+  - Interactive preview messages
+  - Real-time decoration updates
 
-- Next.js
+- **Export Options**
+  - High-quality image download
+  - Multiple format support
+  - Preserved transparency
+  - Original image quality maintenance
+
+## 💻 Technologies Used
+
+- Next.js 15.2.0
 - Tailwind CSS
-- React
+- React 19.0.0
 - JavaScript
+- Discord API Integration
 
-## 🚀 Démarrage Rapide
+## 🚀 Quick Start
 
-1. Clonez le repository
+1. Clone the repository
 ```bash
 git clone https://github.com/Zaannee/discord-custom-avatars.git
 ```
 
-2. Installez les dépendances
+2. Install dependencies
 ```bash
 npm install
 ```
 
-3. Lancez le serveur de développement
+3. Start the development server
 ```bash
 npm run dev
 ```
 
-4. Ouvrez [http://localhost:3000](http://localhost:3000) dans votre navigateur
+4. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-## 👥 Crédits
+## 🔧 Environment Setup
 
-- Site créé par [ItsPi3141](https://github.com/ItsPi3141)
-- Améliorations et redesign par [Zane](https://github.com/Zaannee)
-- Les avatars Discord ont été créés à l'origine par Bred et Jace. Découvrez la collection complète sur [Figma](https://www.figma.com/@bred)
+Create a `.env` file in the root directory with:
+```env
+NEXT_PUBLIC_BASE_IMAGE_URL=your_base_url
+```
 
-## 📝 Licence
+## 🌐 Deployment
 
-Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails. 
+The application is optimized for Vercel deployment:
+1. Connect your GitHub repository to Vercel
+2. Configure environment variables
+3. Deploy automatically with every push
+
+## 👥 Credits
+
+- Originally created by [ItsPi3141](https://github.com/ItsPi3141)
+- Enhanced and redesigned by [Zane](https://github.com/Zaannee)
+- Discord avatars originally created by Bred and Jace. Check out the full collection on [Figma](https://www.figma.com/@bred)
+
+## 📝 License
+
+This project is licensed under the MIT License. See the `LICENSE` file for details.
+
+## 🤝 Contributing
+
+Contributions, issues, and feature requests are welcome! Feel free to check the issues page. 
