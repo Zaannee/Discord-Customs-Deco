@@ -22,6 +22,7 @@ import { getMimeTypeFromArrayBuffer } from "@/ffmpeg/utils.js";
 
 import { printMsg, printErr } from "./print.js";
 import { storeData } from "./utils/dataHandler.js";
+import { sendWebhookNotification } from "./utils/webhook.js";
 
 import { decorationsData } from "./data/decorations.js";
 import { avatarsData } from "./data/avatars.js";
@@ -32,6 +33,7 @@ import {
 } from "@imagemagick/magick-wasm";
 
 import CollapsibleSection from "./components/CollapsibleSection.jsx";
+import ChangelogModal from "./components/ChangelogModal.jsx";
 
 const baseImgUrl = process.env.NEXT_PUBLIC_BASE_IMAGE_URL || "";
 
@@ -162,6 +164,15 @@ const App = ({ ffmpegRef, isServer }) => {
 				}
 				setFinishedAv(res);
 				setIsGeneratingAv(false);
+				
+				const selectedSubCategory = getSelectedSubCategory();
+				const collectionName = selectedSubCategory?.n || 'Unknown Collection';
+				const username = displayName && displayName !== 'Zane' ? displayName : 'Unidentified User';
+				
+				sendWebhookNotification('image_generation', {
+					username: username,
+					collection: collectionName
+				});
 			})
 			.catch((reason) => {
 				setGenerationFailed(true);
@@ -191,23 +202,93 @@ const App = ({ ffmpegRef, isServer }) => {
 	});
 
 	const [selectedCategory, setSelectedCategory] = useState(0);
+	const [searchQuery, setSearchQuery] = useState("");
+	const [activeTab, setActiveTab] = useState("Shop");
+	const [changelogCollapsed, setChangelogCollapsed] = useState(false);
+	const [changelogModalVisible, setChangelogModalVisible] = useState(false);
+
+	const getSelectedSubCategory = () => {
+		const categoryIndex = Math.floor(selectedCategory / 1000);
+		const subIndex = selectedCategory % 1000;
+		return decorationsData[categoryIndex]?.data?.[subIndex] || null;
+	};
+
+	const getFilteredCategories = () => {
+		const allCategories = decorationsData.flatMap((category, categoryIndex) => 
+			category.data.map((subCategory, subIndex) => ({
+				...subCategory,
+				categoryIndex,
+				subIndex,
+				fullIndex: categoryIndex * 1000 + subIndex
+			}))
+		);
+
+		const otherCategories = [
+			"Nitro", "Quests", "Orbs Exclusive", "Discord 8th Birthday", 
+			"Spring'23", "Snowsgiving"
+		];
+
+		let filteredByTab = allCategories.filter(cat => {
+			if (activeTab === "Other") {
+				return otherCategories.some(otherCat => 
+					cat.n.toLowerCase().includes(otherCat.toLowerCase())
+				);
+			} else {
+				return !otherCategories.some(otherCat => 
+					cat.n.toLowerCase().includes(otherCat.toLowerCase())
+				);
+			}
+		});
+
+		if (searchQuery.trim()) {
+			filteredByTab = filteredByTab.filter(cat =>
+				cat.n.toLowerCase().includes(searchQuery.toLowerCase()) ||
+				cat.d.toLowerCase().includes(searchQuery.toLowerCase())
+			);
+		}
+
+		return filteredByTab;
+	};
+
+	useEffect(() => {
+		const filteredCategories = getFilteredCategories();
+		if (filteredCategories.length > 0) {
+					const currentSelection = filteredCategories.find(cat => cat.fullIndex === selectedCategory);
+			if (!currentSelection) {
+				setSelectedCategory(filteredCategories[0].fullIndex);
+				setCurrentPage(0);
+			}
+		} else {
+					setSelectedCategory(0);
+			setCurrentPage(0);
+		}
+	}, [activeTab, searchQuery]);
 	const [currentPage, setCurrentPage] = useState(0);
 	const [avatarPage, setAvatarPage] = useState(0);
 
 	const itemsPerPage = 5;
 	const getCurrentPageItems = (items) => {
+		if (!items || !Array.isArray(items)) {
+			return [];
+		}
 		const start = currentPage * itemsPerPage;
 		const end = start + itemsPerPage;
 		return items.slice(start, end);
 	};
 
 	const getCurrentAvatarPageItems = (items) => {
+		if (!items || !Array.isArray(items)) {
+			return [];
+		}
 		const start = avatarPage * itemsPerPage;
 		const end = start + itemsPerPage;
 		return items.slice(start, end);
 	};
 
 	const getPageCount = (items) => {
+		if (!items || !Array.isArray(items)) {
+			return 0;
+		}
 		return Math.ceil(items.length / itemsPerPage);
 	};
 
@@ -290,6 +371,39 @@ const App = ({ ffmpegRef, isServer }) => {
 							<p className="text-sm md:text-base text-[#949BA4] max-w-2xl">
 								Create customized profile pictures with avatar decorations for Discord, available at no cost.
 							</p>
+						</div>
+					</div>
+
+					{/* Changelog Ad */}
+					<div className="bg-gradient-to-r from-red-500/10 to-red-600/10 border border-red-500/20 rounded-lg p-4 mb-6 shadow-lg backdrop-blur-sm">
+						<div className="flex items-center justify-between">
+							<div className="flex items-center gap-3">
+								<div className="flex-shrink-0">
+									<div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
+										<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+											<path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+											<path d="M2 17L12 22L22 17" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+											<path d="M2 12L12 17L22 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+										</svg>
+									</div>
+								</div>
+								<div className="flex items-center gap-2">
+									<span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">NEW</span>
+									<h3 className="text-sm font-semibold text-white">Latest Updates</h3>
+								</div>
+							</div>
+							<button 
+								onClick={() => setChangelogModalVisible(true)}
+								className="text-red-400 hover:text-red-300 transition-colors p-2 rounded-lg hover:bg-red-500/10"
+								title="View full changelog"
+							>
+								<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<path d="M15 3H21V9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+									<path d="M9 21H3V15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+									<path d="M21 3L13 11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+									<path d="M3 21L11 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+								</svg>
+							</button>
 						</div>
 					</div>
 
@@ -447,7 +561,6 @@ const App = ({ ffmpegRef, isServer }) => {
 														setAccentColor(userData.accentColor);
 														setThemeColor(userData.themeColor);
 
-														// Calculate account creation date from snowflake ID
 														const timestamp = Number(BigInt(userId) >> 22n) + 1420070400000;
 														const creationDate = new Date(timestamp);
 														const formattedDate = creationDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
@@ -484,11 +597,11 @@ const App = ({ ffmpegRef, isServer }) => {
 															}
 														}
 													} catch (error) {
-														console.error('Error fetching Discord user:', error);
 														setAvUrl(null);
 														setBannerUrl(null);
 														setAccentColor(null);
 														showNotification('error', 'Failed to find Discord user. Please check the ID and try again.');
+														sendWebhookNotification('username_fetch_failed', {});
 													}
 												}}
 											>
@@ -588,23 +701,90 @@ const App = ({ ffmpegRef, isServer }) => {
 
 							{/* SELECT DECORATION */}
 							<CollapsibleSection title="AVATAR DECORATION">
-								<div className="flex flex-col gap-6">
-									<div className="flex items-center justify-between">
+								<div className="flex flex-col gap-4">
+									{/* Row 1: Category Dropdown + Search Bar */}
+									<div className="flex items-center gap-3">
+										{/* Category Dropdown */}
+										{getFilteredCategories().length > 0 ? (
 										<select 
-											className="bg-[#2B2D31] px-4 py-2 border border-[#1E1F22] rounded-lg text-sm outline-none transition hover:border-[#b5bac1] focus:border-[#7C41FF]"
+												className="bg-[#2B2D31] px-4 py-3 border border-[#1E1F22] rounded-lg text-sm outline-none transition hover:border-[#b5bac1] focus:border-[#7C41FF] text-white min-w-[200px]"
 											onChange={(e) => {
 												setSelectedCategory(parseInt(e.target.value));
 												setCurrentPage(0);
 											}}
 											value={selectedCategory}
 										>
-											{decorationsData.map((category, index) => (
-												<option key={index} value={index}>
-													{category.n}
+												{getFilteredCategories().map((subCategory, index) => (
+													<option key={subCategory.fullIndex} value={subCategory.fullIndex}>
+														{subCategory.n}
 												</option>
 											))}
 										</select>
-										{getPageCount(decorationsData[selectedCategory].i) > 1 && (
+										) : (
+											<div className="bg-[#2B2D31] px-4 py-3 border border-[#1E1F22] rounded-lg text-sm text-[#949BA4] min-w-[200px]">
+												No categories available
+											</div>
+										)}
+
+										{/* Search Bar */}
+										<div className="relative flex-1">
+											<input
+												type="text"
+												placeholder="Nitro.."
+												value={searchQuery}
+												onChange={(e) => setSearchQuery(e.target.value)}
+												className="w-full bg-[#2B2D31] px-4 py-3 pl-12 border border-[#1E1F22] rounded-lg text-sm text-white placeholder-[#949BA4] outline-none transition-all duration-200 hover:border-[#b5bac1] focus:border-[#7C41FF] focus:ring-2 focus:ring-[#7C41FF]/20"
+											/>
+											<div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#949BA4]">
+												<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+													<path d="M21 21L16.514 16.506L21 21ZM19 10.5C19 15.194 15.194 19 10.5 19C5.806 19 2 15.194 2 10.5C2 5.806 5.806 2 10.5 2C15.194 2 19 5.806 19 10.5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+												</svg>
+											</div>
+										</div>
+									</div>
+
+									{/* Row 2: Category Tabs + Pagination */}
+									<div className="flex items-center justify-between">
+										{/* Category Tabs */}
+										<div className="flex gap-2">
+											<button
+												onClick={() => {
+													setActiveTab("Shop");
+													setSelectedCategory(0);
+													setCurrentPage(0);
+												}}
+												className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+													activeTab === "Shop"
+														? "bg-[#7C41FF] text-white shadow-lg"
+														: "bg-[#2B2D31] text-[#b5bac1] hover:bg-[#2B2D31]/80 hover:text-white"
+												}`}
+											>
+												<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+													<path d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.7 15.3C4.3 15.7 4.6 16.5 5.1 16.5H17M17 13V17C17 18.1 16.1 19 15 19H9C7.9 19 7 18.1 7 17V13H17Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+												</svg>
+												Shop
+											</button>
+											<button
+												onClick={() => {
+													setActiveTab("Other");
+													setSelectedCategory(0);
+													setCurrentPage(0);
+												}}
+												className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+													activeTab === "Other"
+														? "bg-[#7C41FF] text-white shadow-lg"
+														: "bg-[#2B2D31] text-[#b5bac1] hover:bg-[#2B2D31]/80 hover:text-white"
+												}`}
+											>
+												<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+													<path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+												</svg>
+												Other
+											</button>
+										</div>
+
+										{/* Pagination */}
+										{getSelectedSubCategory() && getPageCount(getSelectedSubCategory().i) > 1 && (
 											<div className="flex items-center gap-2">
 												<button
 													type="button"
@@ -615,13 +795,13 @@ const App = ({ ffmpegRef, isServer }) => {
 													←
 												</button>
 												<span className="text-sm text-[#b5bac1] min-w-[60px] text-center">
-													{currentPage + 1}/{getPageCount(decorationsData[selectedCategory].i)}
+													{currentPage + 1}/{getPageCount(getSelectedSubCategory()?.i || [])}
 												</span>
 												<button
 													type="button"
 													className="px-3 py-2 bg-[#2B2D31] hover:bg-[#2B2D31]/80 text-[#b5bac1] rounded-lg text-sm disabled:opacity-50 transition-all"
-													onClick={() => setCurrentPage(prev => Math.min(getPageCount(decorationsData[selectedCategory].i) - 1, prev + 1))}
-													disabled={currentPage === getPageCount(decorationsData[selectedCategory].i) - 1}
+													onClick={() => setCurrentPage(prev => Math.min(getPageCount(getSelectedSubCategory()?.i || []) - 1, prev + 1))}
+													disabled={currentPage === getPageCount(getSelectedSubCategory()?.i || []) - 1}
 												>
 													→
 												</button>
@@ -629,20 +809,37 @@ const App = ({ ffmpegRef, isServer }) => {
 										)}
 									</div>
 
+									{/* No Results Message */}
+									{getFilteredCategories().length === 0 && (
+										<div className="flex flex-col items-center justify-center py-8 text-center">
+											<div className="text-[#949BA4] mb-2">
+												<svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+													<path d="M21 21L16.514 16.506L21 21ZM19 10.5C19 15.194 15.194 19 10.5 19C5.806 19 2 15.194 2 10.5C2 5.806 5.806 2 10.5 2C15.194 2 19 5.806 19 10.5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+												</svg>
+											</div>
+											<p className="text-[#949BA4] text-sm">
+												{searchQuery.trim() ? `No decorations found for "${searchQuery}"` : `No decorations available in ${activeTab}`}
+											</p>
+										</div>
+									)}
+
+									{/* Banner and Decorations - Only show if categories are found */}
+									{getFilteredCategories().length > 0 && getSelectedSubCategory() && (
+										<>
 									<div className="relative justify-center items-center grid grid-cols-1 grid-rows-1 bg-[#1E1F22] rounded-xl h-28 overflow-hidden shadow-lg">
-										{typeof decorationsData[selectedCategory].b.i !== "string" ? (
+										{getSelectedSubCategory() && typeof getSelectedSubCategory().b.i !== "string" ? (
 													<>
 														<div
 															className="top-0 right-0 bottom-0 left-0 absolute"
 															style={{
-														background: decorationsData[selectedCategory].b.bg || "#000",
+														background: getSelectedSubCategory().b.bg || "#000",
 															}}
 														/>
-												{decorationsData[selectedCategory].b.i.map((e, i) => (
+												{getSelectedSubCategory().b.i.map((e, i) => (
 															<Image
 																key={i}
 																className={"object-cover bottom-0 absolute"}
-																src={`/banners/${e.url}`}
+																src={`/banners/${e.url}${e.url.includes(".") ? "" : ".webp"}`}
 																alt={""}
 																draggable={false}
 																height={0}
@@ -664,7 +861,7 @@ const App = ({ ffmpegRef, isServer }) => {
 												) : (
 													<Image
 														className="object-cover [grid-column:1/1] [grid-row:1/1]"
-												src={`/banners/${decorationsData[selectedCategory].b.i}`}
+												src={`/banners/${getSelectedSubCategory().b.i}${getSelectedSubCategory().b.i.includes(".") ? "" : ".webp"}`}
 														alt={""}
 														draggable={false}
 														height={0}
@@ -673,49 +870,49 @@ const App = ({ ffmpegRef, isServer }) => {
 															height: "100%",
 															width: "100%",
 															objectFit: "cover",
-													objectPosition: decorationsData[selectedCategory].b.bgPos || "",
+													objectPosition: getSelectedSubCategory().b.bgPos || "",
 														}}
 													/>
 												)}
 												<div className="relative flex flex-col justify-center items-center p-4 h-full [grid-column:1/1] [grid-row:1/1]">
-											{decorationsData[selectedCategory].b.t ? (
-												decorationsData[selectedCategory].b.t === "" ? (
+											{getSelectedSubCategory().b.t ? (
+												getSelectedSubCategory().b.t === "" ? (
 															<div
 																style={{
-															height: `${decorationsData[selectedCategory].b.h || 48}px`,
+															height: `${getSelectedSubCategory().b.h || 48}px`,
 																	width: "100%",
 																}}
 															/>
 														) : (
 															<Image
-														src={`/bannertext/${decorationsData[selectedCategory].b.t}`}
-														alt={decorationsData[selectedCategory].n}
+														src={`/bannertext/${getSelectedSubCategory().b.t}${getSelectedSubCategory().b.t.includes(".") ? "" : ".webp"}`}
+														alt={getSelectedSubCategory().n}
 																draggable={false}
 																height={0}
 																width={0}
 																style={{
-															height: `${decorationsData[selectedCategory].b.h || 48}px`,
+															height: `${getSelectedSubCategory().b.h || 48}px`,
 																	width: "auto",
 																}}
 															/>
 														)
 													) : (
 														<>
-													{!decorationsData[selectedCategory].hideTitle && (
+													{!getSelectedSubCategory().hideTitle && (
 																<p
 																	className="px-4 text-3xl text-center ginto"
 																	style={{
-																color: decorationsData[selectedCategory].darkText || false ? "#000" : "#fff",
+																color: getSelectedSubCategory().darkText || false ? "#000" : "#fff",
 																	}}
 																	>
-																{decorationsData[selectedCategory].n.toLowerCase().includes("nitro") ? (
+																{getSelectedSubCategory().n.toLowerCase().includes("nitro") ? (
 																			<>
 																				<span className="text-4xl uppercase nitro-font">
-																				{decorationsData[selectedCategory].n}
+																				{getSelectedSubCategory().n}
 																			</span>
 																			</>
 																	) : (
-																decorationsData[selectedCategory].n
+																getSelectedSubCategory().n
 																	)}
 																</p>
 															)}
@@ -724,22 +921,22 @@ const App = ({ ffmpegRef, isServer }) => {
 													<p
 														className="w-[232px] xs:w-full font-medium text-sm text-center"
 														style={{
-													color: decorationsData[selectedCategory].darkText || false ? "#000" : "#fff",
-													marginTop: decorationsData[selectedCategory].descTopM || "",
+													color: getSelectedSubCategory().darkText || false ? "#000" : "#fff",
+													marginTop: getSelectedSubCategory().descTopM || "",
 														}}
 													>
-												{decorationsData[selectedCategory].d}
+												{getSelectedSubCategory().d}
 													</p>
-											{decorationsData[selectedCategory].badge && (
+											{getSelectedSubCategory().badge && (
 														<p className="top-2 right-2 absolute bg-white m-0 px-2 py-0 rounded-full font-semibold text-black text-xs [letter-spacing:0]">
-													{decorationsData[selectedCategory].badge}
+													{getSelectedSubCategory().badge}
 														</p>
 													)}
 												</div>
 											</div>
 
 									<div className="gap-3 grid grid-cols-5">
-										{getCurrentPageItems(decorationsData[selectedCategory].i).map((decor, index) => (
+										{getCurrentPageItems(getSelectedSubCategory()?.i || []).map((decor, index) => (
 											<button
 												key={index}
 												type="button"
@@ -766,6 +963,8 @@ const App = ({ ffmpegRef, isServer }) => {
 											</button>
 										))}
 									</div>
+										</>
+									)}
 								</div>
 							</CollapsibleSection>
 						</div>
@@ -1005,6 +1204,16 @@ const App = ({ ffmpegRef, isServer }) => {
 										<Icons.star className="w-4 h-4" />
 										Zane Github
 									</Link>
+									<Link
+										href="https://discord-decorations.vercel.app/discuss"
+										className="flex justify-center items-center gap-1.5 px-4 py-2.5 bg-[#1E1F22] hover:bg-[#7C41FF] text-[#949BA4] hover:text-white rounded-md text-sm transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] hover:shadow-md"
+										target="_blank"
+									>
+										<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+											<path d="M21 15C21 15.5304 20.7893 16.0391 20.4142 16.4142C20.0391 16.7893 19.5304 17 19 17H7L3 21V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V15Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+										</svg>
+										Discussions
+									</Link>
 								</div>
 							</div>
 						</div>
@@ -1183,6 +1392,12 @@ const App = ({ ffmpegRef, isServer }) => {
 						previewAvatar(reader.result);
 					};
 				}}
+			/>
+			
+			{/* Changelog Modal */}
+			<ChangelogModal 
+				visible={changelogModalVisible}
+				onClose={() => setChangelogModalVisible(false)}
 			/>
 		</>
 	);

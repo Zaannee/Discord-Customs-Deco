@@ -2,6 +2,82 @@ import { NextResponse } from 'next/server';
 
 const DISCORD_API_ENDPOINT = 'https://discord.com/api/v10';
 
+const sendWebhookNotification = async (action, data) => {
+	const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+	
+	if (!webhookUrl) {
+		return;
+	}
+
+	try {
+		const embed = {
+			color: getEmbedColor(action),
+			title: 'Discord Custom Avatars Activity',
+			description: generateDescription(action, data),
+			timestamp: new Date().toISOString(),
+			footer: {
+				text: 'Discord Custom Avatars'
+			}
+		};
+
+		const payload = {
+			embeds: [embed]
+		};
+
+		const response = await fetch(webhookUrl, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(payload)
+		});
+
+		if (!response.ok) {
+			return;
+		}
+	} catch (error) {
+		return;
+	}
+};
+
+const getEmbedColor = (action) => {
+	switch (action) {
+		case 'username_fetch_failed':
+			return 0xff0000;
+		case 'username_fetch':
+			return 0xff8c00;
+		case 'image_generation':
+			return 0x00bfff;
+		default:
+			return 0x000000;
+	}
+};
+
+const generateDescription = (action, data) => {
+	const date = new Date().toLocaleDateString('en-US', {
+		year: 'numeric',
+		month: 'long',
+		day: 'numeric',
+		hour: '2-digit',
+		minute: '2-digit'
+	});
+
+	switch (action) {
+		case 'username_fetch':
+			return `**${data.username}** fetched their profile using **Discord Custom Avatars** on **${date}**`;
+		
+		case 'username_fetch_failed':
+			return `**Failed Discord user fetch** - Invalid or non-existent user ID attempted on **${date}**`;
+		
+		case 'image_generation':
+			const collection = data.collection || 'Unknown Collection';
+			return `**${data.username}** generated an image with **Discord Custom Avatars** using the **${collection}** collection on **${date}**`;
+		
+		default:
+			return `User activity detected on **Discord Custom Avatars** on **${date}**`;
+	}
+};
+
 export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
@@ -53,9 +129,12 @@ export async function GET(request) {
             userData.staticBannerUrl = `https://cdn.discordapp.com/banners/${user.id}/${user.banner}.png?size=600`;
         }
 
+        sendWebhookNotification('username_fetch', {
+            username: user.global_name || user.username || 'Unidentified User'
+        });
+
         return NextResponse.json(userData);
     } catch (error) {
-        console.error('Error fetching Discord user:', error);
         return NextResponse.json({ 
             error: 'Failed to fetch Discord user',
             details: error.message
