@@ -122,3 +122,15 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 ## 🤝 Contributing
 
 Contributions, issues, and feature requests are welcome! Feel free to check the issues page. 
+
+## ⚠️ Development Notice
+
+**Important:** This repository represents the final public release of Discord Custom Avatars. Future updates, enhancements, and new features will be developed privately to maintain exclusive functionality and competitive advantages.
+
+### What this means:
+- **Current features**: All documented features remain fully functional and supported
+- **Bug fixes**: Critical security and functionality issues may still receive public updates
+- **New features**: Will be developed and deployed privately without public source code
+- **Community**: Issues and discussions remain welcome for the current feature set
+
+This approach ensures that while the core functionality remains open-source and accessible, advanced features and improvements maintain their exclusive nature.
